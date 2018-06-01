@@ -31,3 +31,13 @@
 - 当文字改变onTextChanged()
 
 - 当view尺寸发生变化之时
+
+### 重要问题
+去的文字宽度（高度）的方法：
+```java
+//        mTextViewWidth = this.getWidth();
+//        mTextViewHeight = this.getHeight();
+//        这么写拿不到值，原因是在onCreate()方法中控件还没有计算自己的参数所以没办法取到
+    mTextViewWidth = textLength - this.getPaddingRight() - this.getPaddingLeft();
+```
+

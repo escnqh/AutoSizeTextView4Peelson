@@ -11,7 +11,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
     <com.meitu.qihangni.autosizetextview.AutoSizeTextView
-        android:id="@+id/autosizetv_1"
-        android:layout_width="20dp"
-        android:layout_height="25dp" />
+        android:text="5641"
+        android:layout_width="50dp"
+        android:layout_height="50dp" />
+
 </LinearLayout>

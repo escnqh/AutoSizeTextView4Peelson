@@ -1,9 +1,7 @@
 package com.meitu.qihangni.autosizetextview;
 
 import android.content.Context;
-import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -23,17 +21,23 @@ public class AutoSizeTextView extends AppCompatTextView {
     private float mPreTextSize;
     private String mPreText = "";
     private float mRightTextSize;
-
+    private float mPrePadding = 0.5f;
 
     public AutoSizeTextView(Context context) {
         super(context);
         initPaint();
     }
 
-    public AutoSizeTextView(Context context, @Nullable AttributeSet attrs) {
+    public AutoSizeTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
         initPaint();
     }
+
+    public AutoSizeTextView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        initPaint();
+    }
+
 
     @Override
     public void setText(CharSequence text, BufferType type) {
@@ -64,9 +68,10 @@ public class AutoSizeTextView extends AppCompatTextView {
      */
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-//        super.onSizeChanged(w, h, oldw, oldh);
+        Log.i(TAG,"size changed!");
+        super.onSizeChanged(w, h, oldw, oldh);
         if (w != oldw)
-            getRightTextSize(mPreText.length());
+            getRightTextSize(this.getText().toString(), mPreText.length());
     }
 
     /**
@@ -78,29 +83,38 @@ public class AutoSizeTextView extends AppCompatTextView {
      * @param lengthAfter  之后的长度
      */
     @Override
-    protected void onTextChanged(CharSequence text, int start, int lengthBefore, int lengthAfter) {
-//        super.onTextChanged(text, start, lengthBefore, lengthAfter);
+    protected void onTextChanged(final CharSequence text,final int start,final int lengthBefore,final int lengthAfter) {
+        Log.i(TAG,"text changed!");
+        super.onTextChanged(text, start, lengthBefore, lengthAfter);
         mPreText = text.toString();
-        getRightTextSize(lengthAfter);
+        getRightTextSize(text.toString(), this.getWidth());
     }
 
     /**
      * 触发条件之三，当初始化onMeasure()对textview大小进行判断时
+     *
      * @param widthMeasureSpec
      * @param heightMeasureSpec
      */
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        int parentWidth = MeasureSpec.getSize(widthMeasureSpec);
-        int height = getMeasuredHeight();
-        getRightTextSize(parentWidth);
-        this.setMeasuredDimension(parentWidth, height);
+        Log.i(TAG, "widthMeasureSpec:" + widthMeasureSpec);
+        Log.i(TAG, "heightMeasureSpec:" + heightMeasureSpec);
+        mTextViewWidth = MeasureSpec.getSize(widthMeasureSpec);
+        mTextViewHeight = MeasureSpec.getSize(heightMeasureSpec);
+        getRightTextSize(this.getText().toString(), mTextViewWidth);
+        this.setMeasuredDimension((int) mTextViewWidth, (int) mTextViewHeight);
     }
 
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
+
+    /**
+     * 设置边界的精度值
+     *
+     * @param prePadding 控制边界精度
+     */
+    public void setPrePadding(float prePadding) {
+        mPrePadding = prePadding;
     }
 
     /**
@@ -108,7 +122,7 @@ public class AutoSizeTextView extends AppCompatTextView {
      *
      * @param textLength 改变文本之后的文本长度
      */
-    private void getRightTextSize(float textLength) {
+    private void getRightTextSize(String text, float textLength) {
         if (textLength <= 0)
             return;
 
@@ -117,16 +131,16 @@ public class AutoSizeTextView extends AppCompatTextView {
 //        这么写拿不到值，原因是在onCreate()方法中控件还没有计算自己的参数所以没办法取到
 
         mTextViewWidth = textLength - this.getPaddingRight() - this.getPaddingLeft();
-
+//        mTextViewHeight =
         float maxWidth = 100, minWidth = 2;
-        float i=0.5f;
         mPaint.set(this.getPaint());
-        while ((maxWidth - minWidth) > i) {
+        while ((maxWidth - minWidth) > mPrePadding) {
             mRightTextSize = (maxWidth + minWidth) / 2;
             mPaint.setTextSize(mRightTextSize);
-            if (mPaint.measureText(mPreText) >= mTextViewWidth) {
+            Log.i(TAG, "mRightTextSize:" + mRightTextSize + " and padding is: " + (maxWidth - minWidth));
+            if (mPaint.measureText(text) >= mTextViewWidth) {
                 maxWidth = mRightTextSize;
-            } else if (mPaint.measureText(mPreText) <= mTextViewWidth) {
+            } else if (mPaint.measureText(text) <= mTextViewWidth) {
                 minWidth = mRightTextSize;
             }
         }

@@ -11,10 +11,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        TextView tv_test=findViewById(R.id.tv_test);
+        TextView tv_test = findViewById(R.id.tv_test);
 
-        AutoSizeTextView autoSizeTextView=findViewById(R.id.autosizetv_1);
-        autoSizeTextView.setText("1");
+
+//        AutoSizeTextView autoSizeTextView = findViewById(R.id.autosizetv_1);
+//        autoSizeTextView.setText("2111111111111111111" + "\n2");
 
     }
 }
