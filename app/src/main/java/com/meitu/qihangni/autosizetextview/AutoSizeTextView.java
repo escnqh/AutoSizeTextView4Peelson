@@ -84,6 +84,20 @@ public class AutoSizeTextView extends AppCompatTextView {
         getRightTextSize(lengthAfter);
     }
 
+    /**
+     * 触发条件之三，当初始化onMeasure()对textview大小进行判断时
+     * @param widthMeasureSpec
+     * @param heightMeasureSpec
+     */
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        int parentWidth = MeasureSpec.getSize(widthMeasureSpec);
+        int height = getMeasuredHeight();
+        getRightTextSize(parentWidth);
+        this.setMeasuredDimension(parentWidth, height);
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -119,12 +133,5 @@ public class AutoSizeTextView extends AppCompatTextView {
         this.setTextSize(TypedValue.COMPLEX_UNIT_PX, minWidth);
     }
 
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        int parentWidth = MeasureSpec.getSize(widthMeasureSpec);
-        int height = getMeasuredHeight();
-        getRightTextSize(parentWidth);
-        this.setMeasuredDimension(parentWidth, height);
-    }
+
 }
