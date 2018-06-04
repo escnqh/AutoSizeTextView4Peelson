@@ -33,7 +33,7 @@
 - 当view尺寸发生变化之时
 
 ### 重要问题
-去的文字宽度（高度）的方法：
+取文字宽度（高度）的方法：
 ```java
 //        mTextViewWidth = this.getWidth();
 //        mTextViewHeight = this.getHeight();

@@ -13,7 +13,7 @@ import android.util.TypedValue;
  */
 public class AutoSizeTextView extends AppCompatTextView {
 
-    private final String TAG = getClass().getSimpleName();
+    private final String TAG = getClass().getName();
     private Context mContext;
     private Paint mPaint;
     private float mTextViewWidth;
@@ -68,7 +68,7 @@ public class AutoSizeTextView extends AppCompatTextView {
      */
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        Log.i(TAG,"size changed!");
+        Log.i(TAG, "size changed!");
         super.onSizeChanged(w, h, oldw, oldh);
         if (w != oldw)
             getRightTextSize(this.getText().toString(), mPreText.length());
@@ -83,8 +83,8 @@ public class AutoSizeTextView extends AppCompatTextView {
      * @param lengthAfter  之后的长度
      */
     @Override
-    protected void onTextChanged(final CharSequence text,final int start,final int lengthBefore,final int lengthAfter) {
-        Log.i(TAG,"text changed!");
+    protected void onTextChanged(final CharSequence text, final int start, final int lengthBefore, final int lengthAfter) {
+        Log.i(TAG, "text changed!");
         super.onTextChanged(text, start, lengthBefore, lengthAfter);
         mPreText = text.toString();
         getRightTextSize(text.toString(), this.getWidth());
@@ -129,9 +129,8 @@ public class AutoSizeTextView extends AppCompatTextView {
 //        mTextViewWidth = this.getWidth();
 //        mTextViewHeight = this.getHeight();
 //        这么写拿不到值，原因是在onCreate()方法中控件还没有计算自己的参数所以没办法取到
-
-        mTextViewWidth = textLength - this.getPaddingRight() - this.getPaddingLeft();
-//        mTextViewHeight =
+        if (mTextViewWidth == 0)
+            mTextViewWidth = textLength - this.getPaddingRight() - this.getPaddingLeft();
         float maxWidth = 100, minWidth = 2;
         mPaint.set(this.getPaint());
         while ((maxWidth - minWidth) > mPrePadding) {
@@ -143,6 +142,9 @@ public class AutoSizeTextView extends AppCompatTextView {
             } else if (mPaint.measureText(text) <= mTextViewWidth) {
                 minWidth = mRightTextSize;
             }
+        }
+        if (mTextViewHeight != 0) {
+            minWidth = ((minWidth > mTextViewHeight) ? mTextViewHeight : minWidth) - this.getPaddingTop() - this.getPaddingBottom() - mPrePadding;
         }
         this.setTextSize(TypedValue.COMPLEX_UNIT_PX, minWidth);
     }
