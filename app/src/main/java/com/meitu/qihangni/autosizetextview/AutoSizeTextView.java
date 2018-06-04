@@ -6,10 +6,11 @@ import android.graphics.Paint;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.util.TypedValue;
 
 
 /**
+ * 自动判读应该给text设置什么size的textview，应当设置好控件的宽和高
+ *
  * @author nqh 2018/5/31
  */
 public class AutoSizeTextView extends AppCompatTextView {
@@ -20,7 +21,7 @@ public class AutoSizeTextView extends AppCompatTextView {
     private float mTextViewWidth;
     private float mTextViewHeight;
     private float mPreTextSize;
-    private String mPreText = "";
+    private String mText = "";
     private float mRightTextSize;
     private float mPrePadding = 0.5f;
 
@@ -45,7 +46,7 @@ public class AutoSizeTextView extends AppCompatTextView {
 
     @Override
     public void setText(CharSequence text, BufferType type) {
-        mPreText = text.toString();
+        mText = text.toString();
         super.setText(text, type);
     }
 
@@ -75,7 +76,7 @@ public class AutoSizeTextView extends AppCompatTextView {
         Log.i(TAG, "size changed!");
         super.onSizeChanged(w, h, oldw, oldh);
         if (w != oldw)
-            getRightTextSize(this.getText().toString(), mPreText.length());
+            getRightTextSize(this.getText().toString(), mText.length());
     }
 
     /**
@@ -90,8 +91,8 @@ public class AutoSizeTextView extends AppCompatTextView {
     protected void onTextChanged(final CharSequence text, final int start, final int lengthBefore, final int lengthAfter) {
         Log.i(TAG, "text changed!");
         super.onTextChanged(text, start, lengthBefore, lengthAfter);
-        mPreText = text.toString();
-        getRightTextSize(text.toString(), this.getWidth());
+        mText = text.toString();
+        getRightTextSize(mText, this.getWidth());
     }
 
     /**
@@ -103,12 +104,15 @@ public class AutoSizeTextView extends AppCompatTextView {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
         Log.i(TAG, "widthMeasureSpec:" + widthMeasureSpec);
         Log.i(TAG, "heightMeasureSpec:" + heightMeasureSpec);
+
         mTextViewWidth = MeasureSpec.getSize(widthMeasureSpec);
         mTextViewHeight = MeasureSpec.getSize(heightMeasureSpec);
-        getRightTextSize(this.getText().toString(), mTextViewWidth);
         this.setMeasuredDimension((int) mTextViewWidth, (int) mTextViewHeight);
+
+        getRightTextSize(this.getText().toString(), mTextViewWidth);
     }
 
     @Override
@@ -116,12 +120,16 @@ public class AutoSizeTextView extends AppCompatTextView {
         drawText(canvas);
     }
 
+    /**
+     * 重新计算基准线的位置进行绘制文本
+     * @param canvas
+     */
     private void drawText(Canvas canvas) {
-        mPreText = this.getText().toString();
+        mText = this.getText().toString();
         mPaint.setTextSize(mRightTextSize);
-        int x = (int) (mTextViewWidth / 2 - mPaint.measureText(mPreText) / 2);
+        int x = (int) (mTextViewWidth / 2 - mPaint.measureText(mText) / 2);
         int y = (int) ((mTextViewHeight / 2) - ((mPaint.descent() + mPaint.ascent()) / 2));
-        canvas.drawText(mPreText, x, y, mPaint);
+        canvas.drawText(mText, x, y, mPaint);
     }
 
     /**
@@ -141,11 +149,6 @@ public class AutoSizeTextView extends AppCompatTextView {
     private void getRightTextSize(String text, float textLength) {
         if (textLength <= 0)
             return;
-
-//        mTextViewWidth = this.getWidth();
-//        mTextViewHeight = this.getHeight();
-//        这么写拿不到值，原因是在onCreate()方法中控件还没有计算自己的参数所以没办法取到
-
         if (mTextViewWidth == 0)
             mTextViewWidth = textLength - this.getPaddingRight() - this.getPaddingLeft();
         float maxWidth = 100, minWidth = 2;
