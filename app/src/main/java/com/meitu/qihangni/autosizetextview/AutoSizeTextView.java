@@ -1,6 +1,7 @@
 package com.meitu.qihangni.autosizetextview;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
@@ -25,16 +26,19 @@ public class AutoSizeTextView extends AppCompatTextView {
 
     public AutoSizeTextView(Context context) {
         super(context);
+        mContext = context;
         initPaint();
     }
 
     public AutoSizeTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mContext = context;
         initPaint();
     }
 
     public AutoSizeTextView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        mContext = context;
         initPaint();
     }
 
@@ -107,6 +111,18 @@ public class AutoSizeTextView extends AppCompatTextView {
         this.setMeasuredDimension((int) mTextViewWidth, (int) mTextViewHeight);
     }
 
+    @Override
+    protected void onDraw(Canvas canvas) {
+        drawText(canvas);
+    }
+
+    private void drawText(Canvas canvas) {
+        mPreText = this.getText().toString();
+        mPaint.setTextSize(mRightTextSize);
+        int x = (int) (mTextViewWidth / 2 - mPaint.measureText(mPreText) / 2);
+        int y = (int) ((mTextViewHeight / 2) - ((mPaint.descent() + mPaint.ascent()) / 2));
+        canvas.drawText(mPreText, x, y, mPaint);
+    }
 
     /**
      * 设置边界的精度值
@@ -129,6 +145,7 @@ public class AutoSizeTextView extends AppCompatTextView {
 //        mTextViewWidth = this.getWidth();
 //        mTextViewHeight = this.getHeight();
 //        这么写拿不到值，原因是在onCreate()方法中控件还没有计算自己的参数所以没办法取到
+
         if (mTextViewWidth == 0)
             mTextViewWidth = textLength - this.getPaddingRight() - this.getPaddingLeft();
         float maxWidth = 100, minWidth = 2;
@@ -146,7 +163,7 @@ public class AutoSizeTextView extends AppCompatTextView {
         if (mTextViewHeight != 0) {
             minWidth = ((minWidth > mTextViewHeight) ? mTextViewHeight : minWidth) - this.getPaddingTop() - this.getPaddingBottom() - mPrePadding;
         }
-        this.setTextSize(TypedValue.COMPLEX_UNIT_PX, minWidth);
+        mRightTextSize = minWidth;
     }
 
 

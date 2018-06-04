@@ -15,7 +15,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 //        AutoSizeTextView autoSizeTextView = findViewById(R.id.autosizetv_1);
-//        autoSizeTextView.setText("2111111111111111111" + "\n2");
+//        autoSizeTextView.setText("211");
 
     }
 }
