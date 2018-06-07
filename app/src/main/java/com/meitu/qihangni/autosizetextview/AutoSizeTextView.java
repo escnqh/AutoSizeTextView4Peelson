@@ -16,37 +16,31 @@ import android.util.Log;
 public class AutoSizeTextView extends AppCompatTextView {
 
     private final String TAG = getClass().getName();
-    private Context mContext;
     private Paint mPaint;
     private float mTextViewWidth;
     private float mTextViewHeight;
     private float mPreTextSize;
-    private String mText = "";
     private float mRightTextSize;
     private float mPrePadding = 0.5f;
 
     public AutoSizeTextView(Context context) {
         super(context);
-        mContext = context;
         initPaint();
     }
 
     public AutoSizeTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mContext = context;
         initPaint();
     }
 
     public AutoSizeTextView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        mContext = context;
         initPaint();
     }
 
 
     @Override
     public void setText(CharSequence text, BufferType type) {
-        mText = text.toString();
         super.setText(text, type);
     }
 
@@ -60,7 +54,6 @@ public class AutoSizeTextView extends AppCompatTextView {
     public void setTextSize(float size) {
         mPreTextSize = size;
         Log.i(TAG, "setTextSize");
-        super.setTextSize(size);
     }
 
     /**
@@ -74,9 +67,10 @@ public class AutoSizeTextView extends AppCompatTextView {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         Log.i(TAG, "size changed!");
-        super.onSizeChanged(w, h, oldw, oldh);
-        if (w != oldw)
-            getRightTextSize(this.getText().toString(), mText.length());
+//        super.onSizeChanged(w, h, oldw, oldh);
+        if (w != oldw) {
+            getRightTextSize(this.getText().toString(), this.getText().length());
+        }
     }
 
     /**
@@ -90,9 +84,8 @@ public class AutoSizeTextView extends AppCompatTextView {
     @Override
     protected void onTextChanged(final CharSequence text, final int start, final int lengthBefore, final int lengthAfter) {
         Log.i(TAG, "text changed!");
-        super.onTextChanged(text, start, lengthBefore, lengthAfter);
-        mText = text.toString();
-        getRightTextSize(mText, this.getWidth());
+//        super.onTextChanged(text, start, lengthBefore, lengthAfter);
+        getRightTextSize(text.toString(), this.getWidth());
     }
 
     /**
@@ -103,7 +96,7 @@ public class AutoSizeTextView extends AppCompatTextView {
      */
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        //super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
         Log.i(TAG, "widthMeasureSpec:" + widthMeasureSpec);
         Log.i(TAG, "heightMeasureSpec:" + heightMeasureSpec);
@@ -116,26 +109,39 @@ public class AutoSizeTextView extends AppCompatTextView {
     }
 
     @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        Log.i(TAG,"left:"+left+"  top:"+top+"  right:"+right+"  bottom:"+bottom);
+    }
+
+    @Override
     protected void onDraw(Canvas canvas) {
         drawText(canvas);
     }
 
     /**
      * 重新计算基准线的位置进行绘制文本
+     *
      * @param canvas
      */
     private void drawText(Canvas canvas) {
-        mText = this.getText().toString();
-        mPaint.setTextSize(mRightTextSize);
-        int x = (int) (mTextViewWidth / 2 - mPaint.measureText(mText) / 2);
-        int y = (int) ((mTextViewHeight / 2) - ((mPaint.descent() + mPaint.ascent()) / 2));
-        canvas.drawText(mText, x, y, mPaint);
+        if (0 != mPreTextSize && mPreTextSize < mRightTextSize) {
+            mPaint.setTextSize(mPreTextSize);
+            int x = (int) (mTextViewWidth / 2 - mPaint.measureText(this.getText().toString()) / 2);
+            int y = (int) ((mTextViewHeight / 2) - ((mPaint.descent() + mPaint.ascent()) / 2));
+            canvas.drawText(this.getText().toString(), x, y, mPaint);
+        } else {
+            mPaint.setTextSize(mRightTextSize);
+            int x = (int) (mTextViewWidth / 2 - mPaint.measureText(this.getText().toString()) / 2);
+            int y = (int) ((mTextViewHeight / 2) - ((mPaint.descent() + mPaint.ascent()) / 2));
+            canvas.drawText(this.getText().toString(), x, y, mPaint);
+        }
     }
 
     /**
      * 设置边界的精度值
      *
-     * @param prePadding 控制边界精度
+     * @param prePadding 控制粒度
      */
     public void setPrePadding(float prePadding) {
         mPrePadding = prePadding;

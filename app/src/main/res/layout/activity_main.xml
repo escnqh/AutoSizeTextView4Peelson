@@ -2,18 +2,21 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
-    <TextView
-        android:id="@+id/tv_test"
-        android:text="测试"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+
     <com.meitu.qihangni.autosizetextview.AutoSizeTextView
         android:id="@+id/autosizetv_1"
-        android:text="1564655"
         android:layout_width="50dp"
-        android:layout_height="10dp" />
+        android:layout_height="50dp"
+        android:text="1" />
+    <TextView
+        android:id="@+id/tv_test"
+        android:text="1111"
+        android:textSize="20dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp" />
 
 </LinearLayout>
